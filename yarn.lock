@@ -2056,6 +2056,11 @@ aggregate-error@^3.0.0:
     clean-stack "^2.0.0"
     indent-string "^4.0.0"
 
+agora-rtc-sdk@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/agora-rtc-sdk/-/agora-rtc-sdk-3.2.3.tgz#72a2cfbdbe537bc819734f6368f3e3e5c86a0646"
+  integrity sha512-uB8MariNHbk9eddU2xQRGgJk0BHFRphGDXfKARv4Nq+6Onl9k9AGYJBBMi+yhBsMzYx3GxH9fic+MBT9XDpohQ==
+
 ajv-errors@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/ajv-errors/-/ajv-errors-1.0.1.tgz#f35986aceb91afadec4102fbd85014950cefa64d"
