@@ -1,0 +1,39 @@
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 3rem;
+  height: calc(100vh - 3rem);
+}
+
+.base-block {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  width: 80vw;
+}
+
+.guest {
+  @extend .base-block;
+  flex: 1;
+  background-color: lightslategray;
+}
+
+.me {
+  @extend .base-block;
+  flex: 1;
+  background-color: mediumaquamarine;
+}
+
+.buttons {
+  @extend .base-block;
+
+  button {
+    height: 3rem;
+    width: 10rem;
+
+    &:not(:last-child) {
+      margin-right: 2rem;
+    }
+  }
+}
