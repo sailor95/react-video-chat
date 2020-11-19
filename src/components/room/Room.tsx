@@ -19,6 +19,7 @@ interface RoomProps {
 interface RoomStates {
   remoteStreams: Stream[];
   isLocalStreamReady: boolean;
+  isMuted: boolean;
 }
 
 class Room extends Component<RoomProps, RoomStates> {
@@ -32,6 +33,7 @@ class Room extends Component<RoomProps, RoomStates> {
     this.state = {
       remoteStreams: [],
       isLocalStreamReady: false,
+      isMuted: false,
     };
 
     this.client = AgoraRTC.createClient({
@@ -130,7 +132,9 @@ class Room extends Component<RoomProps, RoomStates> {
       stream.stop();
 
       this.setState({
-        remoteStreams: this.state.remoteStreams.filter(id => id !== streamId),
+        remoteStreams: this.state.remoteStreams.filter(
+          stream => stream.getId() !== streamId
+        ),
       });
 
       console.log('RTC remote stream removed ', streamId);
@@ -146,7 +150,9 @@ class Room extends Component<RoomProps, RoomStates> {
       stream.stop();
 
       this.setState({
-        remoteStreams: this.state.remoteStreams.filter(id => id !== streamId),
+        remoteStreams: this.state.remoteStreams.filter(
+          stream => stream.getId() !== streamId
+        ),
       });
 
       console.log('RTC peer left ', streamId);
@@ -208,8 +214,20 @@ class Room extends Component<RoomProps, RoomStates> {
     });
   };
 
+  toggleMute = () => {
+    const { isMuted } = this.state;
+
+    if (isMuted) {
+      this.localStream?.unmuteAudio();
+      this.setState({ isMuted: false });
+    } else {
+      this.localStream?.muteAudio();
+      this.setState({ isMuted: true });
+    }
+  };
+
   render() {
-    const { remoteStreams, isLocalStreamReady } = this.state;
+    const { remoteStreams, isLocalStreamReady, isMuted } = this.state;
 
     return (
       <div className={styles.container}>
@@ -234,7 +252,9 @@ class Room extends Component<RoomProps, RoomStates> {
         </div>
 
         <div className={styles.buttons}>
-          {/* TODO: <button>Mute</button> */}
+          <button onClick={this.toggleMute} disabled={!isLocalStreamReady}>
+            {isMuted ? 'Unmute' : 'Mute'}
+          </button>
           <button onClick={this.handleLeave}>Leave Room</button>
         </div>
       </div>

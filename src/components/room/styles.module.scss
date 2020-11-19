@@ -21,15 +21,15 @@
 
 .guest {
   @extend .base-block;
+  overflow: auto;
   flex: 1;
   background-color: lightslategray;
-  overflow: auto;
 
   &-streams {
     display: flex;
+    overflow: auto;
     justify-content: center;
     height: 100%;
-    overflow: auto;
 
     div {
       &:not(:last-child) {
@@ -40,8 +40,8 @@
 }
 
 .player {
-  height: 150px;
   width: 150px;
+  height: 150px;
 }
 
 .me {
@@ -52,6 +52,8 @@
 
 .buttons {
   @extend .base-block;
+  flex-direction: row;
+  justify-content: center;
 
   button {
     width: 10rem;
