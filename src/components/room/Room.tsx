@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import AgoraRTC, { Stream } from 'agora-rtc-sdk';
+import { History } from 'history';
 
-import { selectRoom } from './roomSlice';
+import { storeType } from '../../store';
 
 import styles from './styles.module.scss';
 
@@ -12,15 +12,50 @@ const client = AgoraRTC.createClient({
   codec: 'h264',
 });
 
-const Room = () => {
-  const [remoteStreams, setRemoteStreams] = useState<Stream[]>([]);
-  const { appId, token, channel } = useSelector(selectRoom);
-  const userId = useRef<string | number>();
-  const localStream = useRef<Stream>();
+interface RoomProps {
+  appId: string;
+  token: string;
+  channel: string;
+  history: History;
+}
 
-  const history = useHistory();
+interface RoomStates {
+  remoteStreams: Stream[];
+}
 
-  const handleLeave = () => {
+class Room extends Component<RoomProps, RoomStates> {
+  userId: string | number;
+  localStream: Stream | null;
+
+  constructor(props: RoomProps | Readonly<RoomProps>) {
+    super(props);
+
+    this.state = {
+      remoteStreams: [],
+    };
+
+    this.userId = '';
+    this.localStream = null;
+  }
+
+  componentDidMount() {
+    const { appId, token, channel } = this.props;
+
+    if (appId && token && channel) {
+      this.initClient().then(() => {
+        this.joinClient().then(() => {
+          // TODO: Bind events
+          this.initStream().then(() => {
+            // TODO: Publish
+          });
+        });
+      });
+    } else {
+      this.handleLeave();
+    }
+  }
+
+  handleLeave = () => {
     client.leave(
       () => {
         console.log('RTC leaved channel');
@@ -29,114 +64,109 @@ const Room = () => {
         console.log('RTC failed to leave channel', err);
       }
     );
-    history.push('/');
+    this.props.history.push('/');
   };
 
-  useEffect(() => {
-    const initClient = () => {
-      return new Promise((resolve, reject) => {
-        client.init(
-          appId,
-          () => {
-            console.log('RTC initialized');
-            client.on('stream-added', () => {
-              // TODO: Handle remote stream added
-            });
-            client.on('stream-subscribed', () => {
-              // TODO: Handle remote stream sub
-            });
-            client.on('stream-removed', () => {
-              // TODO: Handle stream removed
-            });
-            client.on('peer-leave', () => {
-              // TODO: Handle remote stream left
-            });
-            resolve();
-          },
-          err => {
-            console.log('RTC init failed', err);
-            reject();
-          }
-        );
-      });
-    };
-
-    const joinClient = () => {
-      return new Promise((resolve, reject) => {
-        client.join(
-          token,
-          channel,
-          null,
-          uid => {
-            console.log('RTC joined');
-            userId.current = uid;
-            resolve();
-          },
-          err => {
-            console.log('RTC join channel failed', err);
-            reject();
-          }
-        );
-      });
-    };
-
-    const initStream = () => {
-      localStream.current = AgoraRTC.createStream({
-        streamID: userId.current,
-        audio: true,
-        video: true,
-        screen: false,
-      });
-
-      return new Promise((resolve, reject) => {
-        localStream.current!.init(
-          () => {
-            console.log('RTC stream established');
-            resolve();
-          },
-          err => {
-            console.log('RTC stream failed', err);
-            reject();
-          }
-        );
-      });
-    };
-
-    // START ///////////////////////////////////////////////////////////////////
-    if (appId && token && channel) {
-      initClient().then(() => {
-        joinClient().then(() => {
-          // TODO: Bind events
-          initStream().then(() => {
-            // TODO: Publish
+  initClient = () => {
+    return new Promise((resolve, reject) => {
+      client.init(
+        this.props.appId,
+        () => {
+          console.log('RTC initialized');
+          client.on('stream-added', () => {
+            // TODO: Handle remote stream added
           });
-        });
-      });
-    } else {
-      handleLeave();
-    }
-  }, []);
+          client.on('stream-subscribed', () => {
+            // TODO: Handle remote stream sub
+          });
+          client.on('stream-removed', () => {
+            // TODO: Handle stream removed
+          });
+          client.on('peer-leave', () => {
+            // TODO: Handle remote stream left
+          });
+          resolve();
+        },
+        err => {
+          console.log('RTC init failed', err);
+          reject();
+        }
+      );
+    });
+  };
 
-  return (
-    <div className={styles.container}>
-      <h1>Chat Room</h1>
+  joinClient = () => {
+    return new Promise((resolve, reject) => {
+      client.join(
+        this.props.token,
+        this.props.channel,
+        null,
+        uid => {
+          console.log('RTC joined');
+          this.userId = uid;
+          resolve();
+        },
+        err => {
+          console.log('RTC join channel failed', err);
+          reject();
+        }
+      );
+    });
+  };
 
-      <div className={styles.guest}>
-        <h2>Room Members</h2>
-        {/* TODO: Members Videos */}
+  initStream = () => {
+    this.localStream = AgoraRTC.createStream({
+      streamID: this.userId,
+      audio: true,
+      video: true,
+      screen: false,
+    });
+
+    return new Promise((resolve, reject) => {
+      this.localStream!.init(
+        () => {
+          console.log('RTC stream established');
+          resolve();
+        },
+        err => {
+          console.log('RTC stream failed', err);
+          reject();
+        }
+      );
+    });
+  };
+
+  render() {
+    return (
+      <div className={styles.container}>
+        <h1>Chat Room</h1>
+
+        <div className={styles.guest}>
+          <h2>Room Members</h2>
+          {/* TODO: Members Videos */}
+        </div>
+
+        <div className={styles.me}>
+          <h2>My Video</h2>
+          {/* TODO: My Video */}
+        </div>
+
+        <div className={styles.buttons}>
+          {/* TODO: <button>Mute</button> */}
+          <button onClick={this.handleLeave}>Leave Room</button>
+        </div>
       </div>
+    );
+  }
+}
 
-      <div className={styles.me}>
-        <h2>My Video</h2>
-        {/* TODO: My Video */}
-      </div>
-
-      <div className={styles.buttons}>
-        {/* TODO: <button>Mute</button> */}
-        <button onClick={handleLeave}>Leave Room</button>
-      </div>
-    </div>
-  );
+const mapStateToProps = (state: storeType) => {
+  const { appId, token, channel } = state.room;
+  return {
+    appId,
+    token,
+    channel,
+  };
 };
 
-export default Room;
+export default connect(mapStateToProps)(Room);
