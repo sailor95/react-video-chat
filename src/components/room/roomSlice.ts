@@ -23,8 +23,6 @@ export const roomSlice = createSlice({
 export const { setRoomInfo } = roomSlice.actions;
 
 // Selectors
-export const selectAppId = (state: storeType) => state.room.appId;
-export const selectToken = (state: storeType) => state.room.token;
-export const selectChannel = (state: storeType) => state.room.channel;
+export const selectRoom = (state: storeType) => state.room;
 
 export default roomSlice.reducer;
