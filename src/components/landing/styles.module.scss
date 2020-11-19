@@ -4,3 +4,38 @@
   flex-direction: column;
   padding: 5rem;
 }
+
+h1 {
+  margin-bottom: 2rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    display: flex;
+    margin: 15px;
+
+    span {
+      flex: 1;
+    }
+  }
+
+  input {
+    margin-left: 5px;
+  }
+
+  .hint {
+    align-self: center;
+    margin: 15px;
+    color: red;
+    font-weight: bold;
+  }
+
+  button {
+    align-self: center;
+    padding: 3px;
+    width: fit-content;
+  }
+}
