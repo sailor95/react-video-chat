@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import AgoraRTC, { Client, Stream } from 'agora-rtc-sdk';
+import StreamPlayer from 'agora-stream-player';
 import { History } from 'history';
+import { SpinnerCircularFixed } from 'spinners-react';
 
 import { storeType } from '../../store';
 
@@ -16,6 +18,7 @@ interface RoomProps {
 
 interface RoomStates {
   remoteStreams: Stream[];
+  isLocalStreamReady: boolean;
 }
 
 class Room extends Component<RoomProps, RoomStates> {
@@ -28,6 +31,7 @@ class Room extends Component<RoomProps, RoomStates> {
 
     this.state = {
       remoteStreams: [],
+      isLocalStreamReady: false,
     };
 
     this.client = AgoraRTC.createClient({
@@ -47,6 +51,7 @@ class Room extends Component<RoomProps, RoomStates> {
           this.initStream().then(() => {
             this.publishStream().then(() => {
               console.log('RTC flow done');
+              this.setState({ isLocalStreamReady: true });
             });
           });
         });
@@ -199,6 +204,8 @@ class Room extends Component<RoomProps, RoomStates> {
   };
 
   render() {
+    const { isLocalStreamReady } = this.state;
+
     return (
       <div className={styles.container}>
         <h1>Chat Room</h1>
@@ -210,7 +217,11 @@ class Room extends Component<RoomProps, RoomStates> {
 
         <div className={styles.me}>
           <h2>My Video</h2>
-          {/* TODO: My Video */}
+          {isLocalStreamReady ? (
+            <StreamPlayer stream={this.localStream} />
+          ) : (
+            <SpinnerCircularFixed color="#FFF" />
+          )}
         </div>
 
         <div className={styles.buttons}>
