@@ -44,9 +44,10 @@ class Room extends Component<RoomProps, RoomStates> {
     if (appId && token && channel) {
       this.initClient().then(() => {
         this.joinClient().then(() => {
-          // TODO: Bind events
           this.initStream().then(() => {
-            // TODO: Publish
+            this.publishStream().then(() => {
+              console.log('RTC flow done');
+            });
           });
         });
       });
@@ -58,7 +59,7 @@ class Room extends Component<RoomProps, RoomStates> {
   handleLeave = () => {
     this.client.leave(
       () => {
-        console.log('RTC leaved channel');
+        console.log('RTC left channel');
       },
       err => {
         console.log('RTC failed to leave channel', err);
@@ -180,6 +181,20 @@ class Room extends Component<RoomProps, RoomStates> {
           reject();
         }
       );
+    });
+  };
+
+  publishStream = () => {
+    return new Promise((resolve, reject) => {
+      this.client.publish(this.localStream!, err => {
+        console.log('RTC publish failed', err);
+        reject();
+      });
+
+      this.client.on('stream-published', () => {
+        console.log('RTC published');
+        resolve();
+      });
     });
   };
 
