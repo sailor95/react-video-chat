@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import AgoraRTC from 'agora-rtc-sdk';
+import AgoraRTC, { Stream } from 'agora-rtc-sdk';
 
 import { selectRoom } from './roomSlice';
 
@@ -14,6 +14,8 @@ const client = AgoraRTC.createClient({
 
 const Room = () => {
   const { appId, token, channel } = useSelector(selectRoom);
+  const userId = useRef<string | number>();
+  const localStream = useRef<Stream>();
 
   const history = useHistory();
 
@@ -44,8 +46,9 @@ const Room = () => {
           token,
           channel,
           null,
-          () => {
+          uid => {
             console.log('RTC joined');
+            userId.current = uid;
             resolve();
           },
           err => {
@@ -56,11 +59,35 @@ const Room = () => {
       });
     };
 
+    const initStream = () => {
+      localStream.current = AgoraRTC.createStream({
+        streamID: userId.current,
+        audio: true,
+        video: true,
+        screen: false,
+      });
+
+      return new Promise((resolve, reject) => {
+        localStream.current!.init(
+          () => {
+            console.log('RTC stream established');
+            resolve();
+          },
+          err => {
+            console.log('RTC stream failed');
+            reject();
+          }
+        );
+      });
+    };
+
     if (appId && token && channel) {
       initClient().then(() => {
         joinClient().then(() => {
-          // TODO: Init stream
-          // TODO: Publish
+          // TODO: Bind events
+          initStream().then(() => {
+            // TODO: Publish
+          });
         });
       });
     } else {
