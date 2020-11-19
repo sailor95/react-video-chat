@@ -1,13 +1,18 @@
-# Reqirements
+# React Group Video Chat
 
-## Basics
+Author: Dave Huang  
+Email: bugman195.work@gmail.com
+
+## Reqirements
+
+### Basics
 
 - [x] 实现官方案例中的基础功能，包括参数设置，join、leave、publish、unpublish 行为。
 - [x] 实现一对一的视频通话功能。
 - [x] 使用自己最擅长的框架（ React 或者 Vue）渲染视图，使用状态来控制和驱动行为。
 - [x] 使用 Promise 或 async/await 简化异步逻辑。
 
-## Bonus
+### Bonus
 
 - [x] 支持 Stream 的播放/mute/unmute。
 - [x] 使用 Typescript。
@@ -21,19 +26,23 @@
 
 In the project directory, run:
 
-### `yarn install`
+1. `yarn install`
 
-### `yarn start`
+2. `yarn start`
 
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+3. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+4. Enter the **appId**, **temp token** and **channel name** set from Agora.io project console.
 
 ## Result Screenshot
 
-- Landing page:
-  ![](./src/res/demo1.jpg)
+### Landing page
 
-- Chat room page:
-  ![](./src/res/demo2.jpg)
+![](./src/res/demo1.jpg)
+
+### Chat room page
+
+![](./src/res/demo2.jpg)
 
 ## Project Planning
 
