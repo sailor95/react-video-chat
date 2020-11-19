@@ -65,7 +65,7 @@ const Landing = () => {
 
         {showHint && <p className={styles.hint}>Please enter all inputs</p>}
 
-        <button type="submit">Join Room</button>
+        <button type="submit">Join</button>
       </form>
     </div>
   );

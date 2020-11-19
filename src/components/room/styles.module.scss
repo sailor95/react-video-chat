@@ -23,6 +23,25 @@
   @extend .base-block;
   flex: 1;
   background-color: lightslategray;
+  overflow: auto;
+
+  &-streams {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    overflow: auto;
+
+    div {
+      &:not(:last-child) {
+        margin-right: 1rem;
+      }
+    }
+  }
+}
+
+.player {
+  height: 150px;
+  width: 150px;
 }
 
 .me {

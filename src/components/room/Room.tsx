@@ -62,6 +62,11 @@ class Room extends Component<RoomProps, RoomStates> {
   }
 
   handleLeave = () => {
+    if (this.localStream) {
+      this.localStream.close();
+      this.client.unpublish(this.localStream);
+    }
+
     this.client.leave(
       () => {
         console.log('RTC left channel');
@@ -204,7 +209,7 @@ class Room extends Component<RoomProps, RoomStates> {
   };
 
   render() {
-    const { isLocalStreamReady } = this.state;
+    const { remoteStreams, isLocalStreamReady } = this.state;
 
     return (
       <div className={styles.container}>
@@ -212,7 +217,11 @@ class Room extends Component<RoomProps, RoomStates> {
 
         <div className={styles.guest}>
           <h2>Room Members</h2>
-          {/* TODO: Members Videos */}
+          <div className={styles['guest-streams']}>
+            {remoteStreams.map(stream => (
+              <StreamPlayer stream={stream} key={stream.getId()} />
+            ))}
+          </div>
         </div>
 
         <div className={styles.me}>
