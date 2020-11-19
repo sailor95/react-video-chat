@@ -20,6 +20,14 @@ const Room = () => {
   const history = useHistory();
 
   const handleLeave = () => {
+    client.leave(
+      () => {
+        console.log('RTC leaved channel');
+      },
+      err => {
+        console.log('RTC failed to leave channel', err);
+      }
+    );
     history.push('/');
   };
 
@@ -74,7 +82,7 @@ const Room = () => {
             resolve();
           },
           err => {
-            console.log('RTC stream failed');
+            console.log('RTC stream failed', err);
             reject();
           }
         );
