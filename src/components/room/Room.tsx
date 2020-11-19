@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import AgoraRTC, { Stream } from 'agora-rtc-sdk';
@@ -13,6 +13,7 @@ const client = AgoraRTC.createClient({
 });
 
 const Room = () => {
+  const [remoteStreams, setRemoteStreams] = useState<Stream[]>([]);
   const { appId, token, channel } = useSelector(selectRoom);
   const userId = useRef<string | number>();
   const localStream = useRef<Stream>();
@@ -38,6 +39,18 @@ const Room = () => {
           appId,
           () => {
             console.log('RTC initialized');
+            client.on('stream-added', () => {
+              // TODO: Handle remote stream added
+            });
+            client.on('stream-subscribed', () => {
+              // TODO: Handle remote stream sub
+            });
+            client.on('stream-removed', () => {
+              // TODO: Handle stream removed
+            });
+            client.on('peer-leave', () => {
+              // TODO: Handle remote stream left
+            });
             resolve();
           },
           err => {
@@ -89,6 +102,7 @@ const Room = () => {
       });
     };
 
+    // START ///////////////////////////////////////////////////////////////////
     if (appId && token && channel) {
       initClient().then(() => {
         joinClient().then(() => {
