@@ -1,4 +1,7 @@
 import React, { FormEvent, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { setRoomInfo } from '../room/roomSlice';
 
 import styles from './styles.module.scss';
 
@@ -8,6 +11,8 @@ const Landing = () => {
   const [token, setToken] = useState('');
   const [showHint, setShowHint] = useState(false);
 
+  const dispatch = useDispatch();
+
   const handleSubmit = (evt: FormEvent) => {
     evt.preventDefault();
 
@@ -16,7 +21,13 @@ const Landing = () => {
     }
 
     console.log(`Channel: ${channel}, AppId: ${appId}, Token: ${token}`);
-    // TODO: Pass 3 values to Redux (dispatch action)
+    dispatch(
+      setRoomInfo({
+        appId,
+        token,
+        channel,
+      })
+    );
     // TODO: Redirect to Room
   };
 
