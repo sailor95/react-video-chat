@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import AgoraRTC, { Stream } from 'agora-rtc-sdk';
+import AgoraRTC, { Client, Stream } from 'agora-rtc-sdk';
 import { History } from 'history';
 
 import { storeType } from '../../store';
 
 import styles from './styles.module.scss';
-
-const client = AgoraRTC.createClient({
-  mode: 'rtc',
-  codec: 'h264',
-});
 
 interface RoomProps {
   appId: string;
@@ -24,6 +19,7 @@ interface RoomStates {
 }
 
 class Room extends Component<RoomProps, RoomStates> {
+  client: Client;
   userId: string | number;
   localStream: Stream | null;
 
@@ -34,6 +30,10 @@ class Room extends Component<RoomProps, RoomStates> {
       remoteStreams: [],
     };
 
+    this.client = AgoraRTC.createClient({
+      mode: 'rtc',
+      codec: 'h264',
+    });
     this.userId = '';
     this.localStream = null;
   }
@@ -56,7 +56,7 @@ class Room extends Component<RoomProps, RoomStates> {
   }
 
   handleLeave = () => {
-    client.leave(
+    this.client.leave(
       () => {
         console.log('RTC leaved channel');
       },
@@ -69,22 +69,14 @@ class Room extends Component<RoomProps, RoomStates> {
 
   initClient = () => {
     return new Promise((resolve, reject) => {
-      client.init(
+      this.client.init(
         this.props.appId,
         () => {
           console.log('RTC initialized');
-          client.on('stream-added', () => {
-            // TODO: Handle remote stream added
-          });
-          client.on('stream-subscribed', () => {
-            // TODO: Handle remote stream sub
-          });
-          client.on('stream-removed', () => {
-            // TODO: Handle stream removed
-          });
-          client.on('peer-leave', () => {
-            // TODO: Handle remote stream left
-          });
+          this.client.on('stream-added', this.onStreamAdded);
+          this.client.on('stream-subscribed', this.onRemoteClientAdded);
+          this.client.on('stream-removed', this.onStreamRemoved);
+          this.client.on('peer-leave', this.onPeerLeave);
           resolve();
         },
         err => {
@@ -95,9 +87,64 @@ class Room extends Component<RoomProps, RoomStates> {
     });
   };
 
+  onStreamAdded = (event: any) => {
+    const { stream } = event;
+
+    this.setState(
+      {
+        remoteStreams: [...this.state.remoteStreams, stream],
+      },
+      () => {
+        this.client.subscribe(stream, {}, err => {
+          console.log('RTC sub stream failed', err);
+        });
+      }
+    );
+  };
+
+  onRemoteClientAdded = (event: any) => {
+    const remoteStream = event.stream;
+
+    this.state.remoteStreams[remoteStream.getId()].play(
+      'agora_remote ' + remoteStream.getId()
+    );
+  };
+
+  onStreamRemoved = (event: any) => {
+    const { stream } = event;
+
+    if (stream) {
+      const streamId = stream.getId();
+
+      stream.stop();
+
+      this.setState({
+        remoteStreams: this.state.remoteStreams.filter(id => id !== streamId),
+      });
+
+      console.log('RTC remote stream removed ', streamId);
+    }
+  };
+
+  onPeerLeave = (event: any) => {
+    let stream = event.stream;
+
+    if (stream) {
+      const streamId = stream.getId();
+
+      stream.stop();
+
+      this.setState({
+        remoteStreams: this.state.remoteStreams.filter(id => id !== streamId),
+      });
+
+      console.log('RTC peer left ', streamId);
+    }
+  };
+
   joinClient = () => {
     return new Promise((resolve, reject) => {
-      client.join(
+      this.client.join(
         this.props.token,
         this.props.channel,
         null,
