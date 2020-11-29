@@ -3,7 +3,7 @@
 Author: Dave Huang  
 Email: bugman195.work@gmail.com
 
-## Reqirements
+## Project Spec
 
 ### Basics
 
