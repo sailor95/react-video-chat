@@ -7,20 +7,20 @@ Email: bugman195.work@gmail.com
 
 ### Basics
 
-- [x] 实现官方案例中的基础功能，包括参数设置，join、leave、publish、unpublish 行为。
-- [x] 实现一对一的视频通话功能。
-- [x] 使用自己最擅长的框架（ React 或者 Vue）渲染视图，使用状态来控制和驱动行为。
-- [x] 使用 Promise 或 async/await 简化异步逻辑。
+- [x] Implement all the channel life-cycle hooks of [Agora](https://www.agora.io/en/) SDK
+- [x] Implement 1-1 video call feature
+- [x] Use of FE framework: React
+- [x] Use Promise & async/await to simplify logic
 
-### Bonus
+### Advanced
 
-- [x] 支持 Stream 的播放/mute/unmute。
-- [x] 使用 Typescript。
-- [x] 支持多人视频通话。
-- [x] UI 可以使用第三方组件库（SCSS）。
-- [x] 使用 redux, mobx 等状态管理工具。
-- [x] 完善地各个步骤的错误处理。
-- [ ] 测试等其他额外加分内容。
+- [x] Support Stream mute/unmute
+- [x] Use TypeScript
+- [x] Support group video call
+- [x] Use of third party UI kit（SCSS in this repo）
+- [x] Use of Redux
+- [x] Error handling of each event handler
+- [ ] Unit test
 
 ## How to run
 
