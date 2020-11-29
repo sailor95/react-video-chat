@@ -1,7 +1,6 @@
 # React Group Video Chat
 
-Author: Dave Huang  
-Email: bugman195.work@gmail.com
+This is a practice project for [Agora](https://www.agora.io/en/) SDK by implementing a group chat SPA.
 
 ## Project Spec
 
